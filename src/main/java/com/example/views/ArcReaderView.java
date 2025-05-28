@@ -9,6 +9,7 @@ import com.webforj.component.button.Button;
 import com.webforj.component.button.event.ButtonClickEvent;
 import com.webforj.component.field.TextArea;
 import com.webforj.component.field.TextField;
+import com.webforj.component.html.elements.Anchor;
 import com.webforj.component.layout.flexlayout.FlexDirection;
 import com.webforj.component.layout.flexlayout.FlexLayout;
 import com.webforj.component.toast.Toast;
@@ -39,6 +40,9 @@ public class ArcReaderView extends Composite<FlexLayout> {
     output.setWidth("500px");
     output.setHeight("400px");
     self.add(filepath, btn, output);
+
+    self.add(new Anchor("https://documentation.basis.cloud/BASISHelp/WebHelp/bbjobjects/SysGui/bbjcontrol/BBjControl.htm", "BBjControl Docs","_blank"));
+    self.add(new Anchor("https://documentation.basis.cloud/BASISHelp/WebHelp/bbjobjects/SysGui/bbjcontrol/BBjControl.htm#Constants_BBj_SysGui", "BBjControl Types","_blank"));
   }
 
   private void analyzeArcFile(ButtonClickEvent buttonClickEvent) {
