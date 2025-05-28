@@ -1,9 +1,11 @@
 use java.util.ArrayList
 use java.util.HashMap
+use java.util.Map
+use com.example.ArcScannerIF
 
-class public ArcScanner
+class public ArcScanner implements ArcScannerIF
 
-    method public static HashMap getWindows(String file!)
+    method public  Map getWindows(String file!)
 
         list! = new HashMap()
 
@@ -13,10 +15,10 @@ class public ArcScanner
             read (ch,end=*break)line$
             if line$="" then continue
             line$=cvs(line$,3)
-            if pos("WINDOW" = line$)>0 then 
+            if pos("WINDOW" = line$)>0 then
                 win$=line$(pos(" "=line$,1,1)+1,pos(" "=line$,1,2)-pos(" "=line$,1,1)-1)
                 if win$(len(win$),1)="," then continue
-                if pos("CHILD"=line$)>0 then   
+                if pos("CHILD"=line$)>0 then
                     list!.put("C"+win$,line$)
                 else
                     list!.put("W"+win$,line$)
@@ -26,28 +28,28 @@ class public ArcScanner
         close (ch)
         methodret list!
 
-        notfound:            
+        notfound:
             methodret null()
     methodend
 
-    method public static HashMap getControls(String file!,String win!)
+    method public  Map getControls(String file!,String win!)
 
         ch=unt
         open(ch)"X0"
         api! = BBjAPI()
         sg! = api!.getSysGui()
         res = sg!.resOpen(file!)
-        
+
         if str(win!)(1,1)="W" then
             wnd! = sg!.createTopLevelWindow(res,num(str(win!)(2)))
             ctrllist! =  wnd!.getAllControls()
             list! = #enumControls(ctrllist!)
             wnd!.destroy()
         fi
-        
+
         if str(win!)(1,1)="C" then
             sg!.setContext(4555)
-            wnd! = sg!.addWindow(10,10,10,10,"holder")            
+            wnd! = sg!.addWindow(10,10,10,10,"holder")
             cw!=wnd!.createChildWindow(res,num(str(win!)(2)),100,10,10)
             ctrllist! =  cw!.getAllControls()
             list! = #enumControls(ctrllist!)
@@ -85,10 +87,11 @@ class public ArcScanner
     methodend
 classend
 
+as! = new ArcScanner()
 arcfile$="../../../../samplefiles/carmain.arc"
-rem print ArcScanner.getWindows(arcfile$)
-rem print ArcScanner.getControls(arcfile$,"W1")
-rem print ArcScanner.getControls(arcfile$,"C101")
+print as!.getWindows(arcfile$)
+print as!.getControls(arcfile$,"W1")
+print as!.getControls(arcfile$,"C101")
 
 
 input *

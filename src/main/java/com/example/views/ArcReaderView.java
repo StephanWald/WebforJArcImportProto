@@ -1,5 +1,7 @@
 package com.example.views;
 
+import com.example.ArcScannerIF;
+import com.webforj.App;
 import com.webforj.Environment;
 import com.webforj.component.Composite;
 import com.webforj.component.Theme;
@@ -12,8 +14,6 @@ import com.webforj.component.layout.flexlayout.FlexLayout;
 import com.webforj.component.toast.Toast;
 import com.webforj.router.annotation.Route;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,27 +49,23 @@ public class ArcReaderView extends Composite<FlexLayout> {
       return;
     }
 
-      Object helper = Environment.getCurrent().getBridge().createInstance("::!!bbj/arcscanner.bbj::ArcScanner");
-
-    ArrayList<String> args = new ArrayList<>();
-    args.add(filepathText);
-
-    Map winlist = (Map) Environment.getCurrent().getBridge().invokeMethod(helper, "getWindows", args);
-
+    App.busy("Please wait while scanning file...");
     String data = "Windows:\n";
+
+    ArcScannerIF scanner = (ArcScannerIF) Environment.getCurrent().getBridge().createInstance("::!!bbj/arcscanner.bbj::ArcScanner");
+
+    Map winlist = scanner.getWindows(filepathText);
 
     Set<String> wins = winlist.keySet();
     for (String win : wins){
       data+= "Window: "+win+" "+winlist.get(win)+"\n";
-
-      args.clear();
-      args.add(filepathText);
-      args.add(win);
-      Map controllist = (Map) Environment.getCurrent().getBridge().invokeMethod(helper, "getControls", args);
+      Map controllist = scanner.getControls(filepathText,win);
       data+= "Controls:\n";
       data+=controllist.toString();
       data+="\n\n";
     }
     output.setText(data);
+    App.busy(false);
+
   }
 }
