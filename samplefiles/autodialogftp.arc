@@ -1,0 +1,12 @@
+VERSION "4.0"
+
+WINDOW 1 "DMS Volvo VIDA Server Program" 1 80 300 115
+BEGIN
+    ICON "Carit.ico"
+    DIALOGBEHAVIOR
+    INVISIBLE
+    KEYBOARDNAVIGATION
+    NOT SIZABLE
+    EVENTMASK 3287286796
+    NAME "frmautodialogftp"
+END

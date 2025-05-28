@@ -1,0 +1,95 @@
+use java.util.ArrayList
+use java.util.HashMap
+
+class public ArcScanner
+
+    method public static HashMap getWindows(String file!)
+
+        list! = new HashMap()
+
+        ch=unt
+        open (ch,err=notfound) file!
+        while 1
+            read (ch,end=*break)line$
+            if line$="" then continue
+            line$=cvs(line$,3)
+            if pos("WINDOW" = line$)>0 then 
+                win$=line$(pos(" "=line$,1,1)+1,pos(" "=line$,1,2)-pos(" "=line$,1,1)-1)
+                if win$(len(win$),1)="," then continue
+                if pos("CHILD"=line$)>0 then   
+                    list!.put("C"+win$,line$)
+                else
+                    list!.put("W"+win$,line$)
+                fi
+            fi
+        wend
+        close (ch)
+        methodret list!
+
+        notfound:            
+            methodret null()
+    methodend
+
+    method public static HashMap getControls(String file!,String win!)
+
+        ch=unt
+        open(ch)"X0"
+        api! = BBjAPI()
+        sg! = api!.getSysGui()
+        res = sg!.resOpen(file!)
+        
+        if str(win!)(1,1)="W" then
+            wnd! = sg!.createTopLevelWindow(res,num(str(win!)(2)))
+            ctrllist! =  wnd!.getAllControls()
+            list! = #enumControls(ctrllist!)
+            wnd!.destroy()
+        fi
+        
+        if str(win!)(1,1)="C" then
+            sg!.setContext(4555)
+            wnd! = sg!.addWindow(10,10,10,10,"holder")            
+            cw!=wnd!.createChildWindow(res,num(str(win!)(2)),100,10,10)
+            ctrllist! =  cw!.getAllControls()
+            list! = #enumControls(ctrllist!)
+            wnd!.destroy()
+        fi
+
+        sg!.resClose(res)
+        close (ch)
+
+        methodret list!
+
+    methodend
+
+    method private static HashMap enumControls(ArrayList ctrllist!)
+        list! = new HashMap()
+            it! = ctrllist!.iterator()
+            while it!.hasNext()
+                declare auto BBjControl ctrl!
+                ctrl! = it!.next()
+                id!=ctrl!.getID()
+                hm! = new HashMap()
+                hm!.put("id",id!)
+                hm!.put("type",ctrl!.getControlType())
+                hm!.put("name",ctrl!.getName())
+                hm!.put("x",ctrl!.getX())
+                hm!.put("y",ctrl!.getY())
+                hm!.put("w",ctrl!.getWidth())
+                hm!.put("h",ctrl!.getHeight())
+                hm!.put("text",ctrl!.getText())
+                hm!.put("visible",ctrl!.isVisible())
+                hm!.put("tooltip",ctrl!.getToolTipText())
+                list!.put(id!,hm!)
+            wend
+        methodret list!
+    methodend
+classend
+
+arcfile$="../../../../samplefiles/carmain.arc"
+rem print ArcScanner.getWindows(arcfile$)
+rem print ArcScanner.getControls(arcfile$,"W1")
+rem print ArcScanner.getControls(arcfile$,"C101")
+
+
+input *
+release
